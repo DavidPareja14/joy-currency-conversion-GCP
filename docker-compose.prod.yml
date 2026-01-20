@@ -5,9 +5,5 @@ services:
       - "8080:8080"
     environment:
       - PORT=8080
-      - GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys/adc.json
       - PROJECT_ID=joy-currency-conversion
-    volumes:
-      # Montar las credenciales de tu máquina al contenedor
-      - $HOME/.config/gcloud/application_default_credentials.json:/tmp/keys/adc.json:ro
 
