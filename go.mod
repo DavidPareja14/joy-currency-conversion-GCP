@@ -2,14 +2,18 @@ module github.com/joy-currency-conversion-GCP
 
 go 1.24.0
 
-require github.com/joho/godotenv v1.5.1
+require (
+	cloud.google.com/go/secretmanager v1.16.0
+	github.com/go-sql-driver/mysql v1.9.3
+	github.com/joho/godotenv v1.5.1
+)
 
 require (
 	cloud.google.com/go/auth v0.16.4 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.8.0 // indirect
 	cloud.google.com/go/iam v1.5.2 // indirect
-	cloud.google.com/go/secretmanager v1.16.0 // indirect
+	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
