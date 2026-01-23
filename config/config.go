@@ -8,6 +8,7 @@ import (
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
+	"github.com/joho/godotenv"
 )
 
 type Environment string
@@ -89,6 +90,10 @@ func loadSecret(envKey, secretName string, env Environment) string {
 		return getSecretFromGCP(secretName)
 	}
 
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Warning: .env file not found, using system environment variables")
+	}
 	value := os.Getenv(envKey)
 	if value == "" {
 		log.Fatalf("❌ Variable %s no encontrada en ambiente local", envKey)

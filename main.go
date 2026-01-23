@@ -5,9 +5,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"os"
-
-	"github.com/joho/godotenv"
+	
+	"github.com/joy-currency-conversion-GCP/config"
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
@@ -33,34 +32,23 @@ func getSecret(secretName string) string {
 	return string(result.Payload.Data)
 }
 
+var appConfig *config.Config
+
 func main() {
-	// Load environment variables from .env file
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Warning: .env file not found, using system environment variables")
-	}
-
-	// Get API key from environment
-	apiKey := os.Getenv("EXCHANGE_RATES_API_KEY")
-	if apiKey == "" {
-		log.Println("EXCHANGE_RATES_API_KEY environment variable is required")
-	}
-
-	// Initialize MySQL (simple; creates table if needed)
-	if err := InitMySQLFromEnv(); err != nil {
+	appConfig = config.Load()
+	if err := InitMySQLFromEnv(appConfig); err != nil {
 		log.Fatalf("failed to initialize MySQL: %v", err)
 	}
 
 	http.HandleFunc("/convert", convertHandler)
 	http.HandleFunc("/favorites", favoritesHandler)
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
+	addr := ":" + appConfig.Port
+	log.Printf("🚀 Servidor escuchando en %s (ambiente: %s)", addr, appConfig.Environment)
 
-	log.Printf("Server starting on port %s", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	if err := http.ListenAndServe(addr, nil); err != nil {
+		log.Fatalf("❌ Error iniciando servidor: %v", err)
+	}
 }
 
 func convertHandler(w http.ResponseWriter, r *http.Request) {
@@ -69,14 +57,7 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	apiKey := os.Getenv("EXCHANGE_RATES_API_KEY")
-
-	if apiKey == "" {
-		projectId := os.Getenv("PROJECT_ID")
-		apiKey = getSecret("projects/" + projectId + "/secrets/EXCHANGE_RATES_API_KEY/versions/latest")
-	}
-	// Call the conversion logic
-	result, err := ConvertEURToCOP(apiKey)
+	result, err := ConvertEURToCOP(appConfig.APIKey)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
