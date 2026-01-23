@@ -33,7 +33,6 @@ type DatabaseConfig struct {
 	ConnectionName string // Para Cloud SQL (proyecto:region:instancia)
 }
 
-// Load carga toda la configuración
 func Load() *Config {
 	env := detectEnvironment()
 
@@ -43,20 +42,17 @@ func Load() *Config {
 		Port:        getEnv("PORT", "8080"),
 		Environment: env,
 		DBConfig:    loadDatabaseConfig(env),
-		APIKey:      loadSecret("API_KEY", "api-key", env),
+		APIKey:      loadSecret("EXCHANGE_RATES_API_KEY", "EXCHANGE_RATES_API_KEY", env),
 	}
 
 	return cfg
 }
 
-// detectEnvironment determina si estamos en local o GCP
 func detectEnvironment() Environment {
-	// Si existe GCP_PROJECT_ID, estamos en GCP
 	if os.Getenv("GCP_PROJECT_ID") != "" {
 		return EnvProduction
 	}
 
-	// Si existe ENVIRONMENT=production
 	if os.Getenv("ENVIRONMENT") == "production" {
 		return EnvProduction
 	}
@@ -64,7 +60,6 @@ func detectEnvironment() Environment {
 	return EnvLocal
 }
 
-// loadDatabaseConfig carga la config de BD según el ambiente
 func loadDatabaseConfig(env Environment) DatabaseConfig {
 	if env == EnvProduction {
 		log.Println("📦 Configurando Cloud SQL (producción)")
@@ -88,14 +83,12 @@ func loadDatabaseConfig(env Environment) DatabaseConfig {
 	}
 }
 
-// loadSecret obtiene un secreto del ambiente correcto
 func loadSecret(envKey, secretName string, env Environment) string {
 	if env == EnvProduction {
 		log.Printf("🔐 Obteniendo '%s' desde Secret Manager", secretName)
 		return getSecretFromGCP(secretName)
 	}
 
-	// En local: variable de entorno
 	value := os.Getenv(envKey)
 	if value == "" {
 		log.Fatalf("❌ Variable %s no encontrada en ambiente local", envKey)
@@ -103,7 +96,6 @@ func loadSecret(envKey, secretName string, env Environment) string {
 	return value
 }
 
-// getSecretFromGCP obtiene un secreto de Secret Manager
 func getSecretFromGCP(secretName string) string {
 	projectID := os.Getenv("GCP_PROJECT_ID")
 	if projectID == "" {
@@ -129,7 +121,6 @@ func getSecretFromGCP(secretName string) string {
 	return string(result.Payload.Data)
 }
 
-// getEnv obtiene variable de entorno con valor por defecto
 func getEnv(key, defaultValue string) string {
 	value := os.Getenv(key)
 	if value == "" {
@@ -138,7 +129,6 @@ func getEnv(key, defaultValue string) string {
 	return value
 }
 
-// IsProduction indica si está en producción
 func (c *Config) IsProduction() bool {
 	return c.Environment == EnvProduction
 }
