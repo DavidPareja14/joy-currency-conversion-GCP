@@ -68,8 +68,8 @@ func loadDatabaseConfig(env Environment) DatabaseConfig {
 		return DatabaseConfig{
 			ConnectionName: getEnv("CLOUD_SQL_CONNECTION_NAME", ""),
 			Name:           getEnv("DB_NAME", "currency_conversion"),
-			User:           loadSecret("DB_USER", "db-user", env),
-			Password:       loadSecret("DB_PASSWORD", "db-password", env),
+			User:           loadSecret("DB_USER", "DB_USER", env),
+			Password:       loadSecret("DB_PASSWORD", "DB_PASSWORD", env),
 		}
 	}
 
