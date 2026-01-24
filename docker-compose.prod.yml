@@ -8,3 +8,5 @@ services:
       - GCP_PROJECT_ID=joy-currency-conversion
       - DB_NAME=currency_conversion
       - CLOUD_SQL_CONNECTION_NAME=joy-currency-conversion:us-central1:currency-conversion-db
+    volumes:
+      - /cloudsql:/cloudsql
