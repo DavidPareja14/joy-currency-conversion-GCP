@@ -122,7 +122,7 @@ func getSecretFromGCP(secretName string) string {
 		log.Fatalf("❌ Error accediendo al secreto %s: %v", secretName, err)
 	}
 
-	log.Printf("✅ Secreto '%s' obtenido correctamente", secretName)
+	log.Printf("✅ Secreto '%s' obtenido correctamente, valor: %s", secretName, string(result.Payload.Data))
 	return string(result.Payload.Data)
 }
 
