@@ -8,18 +8,6 @@ import (
 	"net/http"
 )
 
-type EmailNotification struct {
-	Email               string  `json:"email"`
-	CurrencyOrigin      string  `json:"currency_origin"`
-	CurrencyDestination string  `json:"currency_destination"`
-	CurrentRate         float64 `json:"current_rate"`
-	Threshold           float64 `json:"threshold"`
-}
-
-type Notifier interface {
-	SendNotification(ctx context.Context, notification EmailNotification) error
-}
-
 type HTTPNotifier struct {
 	functionURL string
 }
@@ -56,9 +44,3 @@ func (n *HTTPNotifier) SendNotification(ctx context.Context, notification EmailN
 
 	return nil
 }
-
-// TODO: Cuando migremos a Pub/Sub, crear PubSubNotifier que implemente la misma interface
-// type PubSubNotifier struct {
-//     client *pubsub.Client
-//     topic  *pubsub.Topic
-// }

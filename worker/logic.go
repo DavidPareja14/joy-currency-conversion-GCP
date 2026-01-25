@@ -15,6 +15,20 @@ import (
 var db *sql.DB
 var notifier Notifier
 
+// Notifier defines the contract for sending notifications
+type Notifier interface {
+	SendNotification(ctx context.Context, notification EmailNotification) error
+}
+
+// EmailNotification represents the data for sending an email
+type EmailNotification struct {
+	Email               string  `json:"email"`
+	CurrencyOrigin      string  `json:"currency_origin"`
+	CurrencyDestination string  `json:"currency_destination"`
+	CurrentRate         float64 `json:"current_rate"`
+	Threshold           float64 `json:"threshold"`
+}
+
 func InitDB(cfg *config.Config) error {
 	conn, err := cfg.DBConfig.Connect()
 	if err != nil {
