@@ -1,0 +1,52 @@
+services:
+  currency-converter:
+    build: ./api
+    ports:
+      - "8080:8080"
+    env_file:
+      - api/.env
+    environment:
+      - PORT=8080
+      - GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys/adc.json
+      - PROJECT_ID=joy-currency-conversion
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=app
+      - DB_PASSWORD=app_password
+      - DB_NAME=currency_conversion
+    volumes:
+      - $HOME/.config/gcloud/application_default_credentials.json:/tmp/keys/adc.json:ro
+    depends_on:
+      - mysql
+
+  worker:
+    build: ./worker
+    ports:
+      - "8081:8081"
+    env_file:
+      - worker/.env
+    environment:
+      - PORT=8081
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=app
+      - DB_PASSWORD=app_password
+      - DB_NAME=currency_conversion
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=currency_conversion
+      - MYSQL_USER=app
+      - MYSQL_PASSWORD=app_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

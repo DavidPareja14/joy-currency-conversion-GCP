@@ -1,0 +1,35 @@
+services:
+  worker:
+    build: .
+    ports:
+      - "8081:8081"
+    env_file:
+      - .env
+    environment:
+      - PORT=8081
+    depends_on:
+      - mysql
+    networks:
+      - currency-network
+
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=currency_conversion
+      - MYSQL_USER=app
+      - MYSQL_PASSWORD=app_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - currency-network
+
+volumes:
+  mysql_data:
+
+networks:
+  currency-network:
+    driver: bridge
