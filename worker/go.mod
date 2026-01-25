@@ -1,4 +1,4 @@
-module github.com/joy-currency-conversion-GCP
+module github.com/joy-currency-conversion-GCP/worker
 
 go 1.24.0
 
