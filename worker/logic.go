@@ -129,6 +129,12 @@ func CheckThresholdsAndNotify(ctx context.Context, apiKey string) error {
 
 	log.Printf("Found %d favorite conversions to check", len(favorites))
 
+	maxChecks := 1 // For avoid rate limit in the free tier
+	if len(favorites) > maxChecks {
+		log.Printf("⚠️ Limiting checks to %d favorites (found %d total)", maxChecks, len(favorites))
+		favorites = favorites[:maxChecks]
+	}
+
 	for _, fav := range favorites {
 		rate, err := GetExchangeRate(apiKey, fav.CurrencyOrigin, fav.CurrencyDestination)
 		if err != nil {
