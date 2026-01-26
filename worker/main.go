@@ -21,6 +21,7 @@ func main() {
 
 	http.HandleFunc("/check-thresholds", checkThresholdsHandler)
 	http.HandleFunc("/health", healthHandler)
+	http.HandleFunc("/delete-all-favorites", deleteAllFavoritesHandler)
 
 	addr := ":" + appConfig.Port
 	log.Printf("🚀 Worker running on %s (environment: %s)", addr, appConfig.Environment)
@@ -64,4 +65,25 @@ func checkThresholdsHandler(w http.ResponseWriter, r *http.Request) {
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("OK"))
+}
+
+func deleteAllFavoritesHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	result, err := db.Exec("DELETE FROM favorite_conversions")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"message": "all favorites deleted",
+		"rows_affected": rowsAffected,
+	})
 }
