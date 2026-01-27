@@ -5,7 +5,7 @@ A microservices-based currency conversion system built on Google Cloud Platform 
 ## Architecture Overview
 
 ```
-Cloud Scheduler (every 6 hours)
+Cloud Scheduler
          ↓
     Worker (Cloud Run)
          ↓
