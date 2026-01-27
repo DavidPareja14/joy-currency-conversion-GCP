@@ -4,6 +4,8 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
+import base64
+import json
 
 @functions_framework.http
 def send_email_notification(request):
@@ -12,11 +14,26 @@ def send_email_notification(request):
     if not request_json:
         return jsonify({"error": "invalid request body"}), 400
     
-    email = request_json.get('email')
-    currency_origin = request_json.get('currency_origin')
-    currency_destination = request_json.get('currency_destination')
-    current_rate = request_json.get('current_rate')
-    threshold = request_json.get('threshold')
+    # Extract message from Pub/Sub format
+    if 'message' in request_json:
+        # Pub/Sub Push format
+        pubsub_message = request_json['message']
+        if 'data' not in pubsub_message:
+            return jsonify({"error": "no data in pubsub message"}), 400
+        
+        # Decode base64 message
+        data_base64 = pubsub_message['data']
+        data_decoded = base64.b64decode(data_base64).decode('utf-8')
+        data = json.loads(data_decoded)
+    else:
+        # Direct HTTP call (backward compatibility)
+        data = request_json
+    
+    email = data.get('email')
+    currency_origin = data.get('currency_origin')
+    currency_destination = data.get('currency_destination')
+    current_rate = data.get('current_rate')
+    threshold = data.get('threshold')
     
     if not all([email, currency_origin, currency_destination, current_rate, threshold]):
         return jsonify({"error": "missing required fields"}), 400
