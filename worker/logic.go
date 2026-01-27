@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/joy-currency-conversion-GCP/worker/config"
 )
@@ -38,8 +39,23 @@ func InitDB(cfg *config.Config) error {
 	return nil
 }
 
-func InitNotifier(cfg *config.Config) {
+func InitNotifierWithCloudFunction(cfg *config.Config) {
 	notifier = NewHTTPNotifier(cfg.FunctionURL)
+}
+
+func InitNotifier(cfg *config.Config) error {
+	projectID := os.Getenv("GCP_PROJECT_ID")
+	if projectID == "" {
+		return fmt.Errorf("GCP_PROJECT_ID not set")
+	}
+
+	pubsubNotifier, err := NewPubSubNotifier(projectID, cfg.PubSubTopicID)
+	if err != nil {
+		return fmt.Errorf("failed to create pubsub notifier: %w", err)
+	}
+
+	notifier = pubsubNotifier
+	return nil
 }
 
 type FavoriteConversion struct {

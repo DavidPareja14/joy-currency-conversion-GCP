@@ -23,6 +23,7 @@ type Config struct {
 	Environment     Environment
 	APIKey          string
 	FunctionURL     string // URL de la Cloud Function para enviar emails
+	PubSubTopicID   string // Topic ID de Pub/Sub para notificaciones
 	DBConfig        DatabaseConfig
 }
 
@@ -46,6 +47,7 @@ func Load() *Config {
 		DBConfig:    loadDatabaseConfig(env),
 		APIKey:      loadSecret("EXCHANGE_RATES_API_KEY", "EXCHANGE_RATES_API_KEY", env),
 		FunctionURL: loadSecret("FUNCTION_URL", "FUNCTION_URL", env),
+		PubSubTopicID: loadSecret("PUBSUB_TOPIC_ID", "PUBSUB_TOPIC_ID", env),
 	}
 
 	return cfg
