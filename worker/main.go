@@ -17,7 +17,9 @@ func main() {
 		log.Fatalf("failed to initialize database: %v", err)
 	}
 
-	InitNotifier(appConfig)
+	if err := InitNotifier(appConfig); err != nil {
+		log.Fatalf("failed to initialize notifier: %v", err)
+	}
 
 	http.HandleFunc("/check-thresholds", checkThresholdsHandler)
 	http.HandleFunc("/health", healthHandler)
