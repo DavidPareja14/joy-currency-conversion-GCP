@@ -196,15 +196,3 @@ docker-compose up
 # Worker available at: http://localhost:8081
 ```
 
----
-
-## Documentation
-
-For detailed setup and deployment instructions, see the [Wiki](../../wiki):
-
-- [API Service Setup](../../wiki/API-Service)
-- [Worker Setup](../../wiki/Worker-Service)
-- [Function Setup](../../wiki/Email-Function)
-- [GCP Configuration](../../wiki/GCP-Configuration)
-- [Local Development](../../wiki/Local-Development)
-
